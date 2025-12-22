@@ -1,0 +1,22 @@
+# Minimal test - does this work?
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Test"
+$form.Size = New-Object System.Drawing.Size(400, 300)
+
+$panel = New-Object System.Windows.Forms.Panel
+$panel.Location = New-Object System.Drawing.Point(20, 20)
+$panel.Size = New-Object System.Drawing.Size(200, 200)
+$panel.BackColor = [System.Drawing.Color]::White
+$form.Controls.Add($panel)
+
+$testCell = New-Object System.Windows.Forms.Panel
+$testCell.Size = New-Object System.Drawing.Size(50, 50)
+$testCell.Location = New-Object System.Drawing.Point(10, 10)
+$testCell.BackColor = [System.Drawing.Color]::LightGray
+$testCell.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+$panel.Controls.Add($testCell)
+
+$form.ShowDialog()
