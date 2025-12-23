@@ -1,6 +1,3 @@
-# PRIME Score Tracker - WORKING VERSION (Old Selection + New Notes)
-# Calendar dates select with white border highlight, notes change/load/save correctly
-
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
@@ -23,7 +20,7 @@ if (Test-Path $dataFile) {
 $script:displayMonth = Get-Date
 $script:selectedDate = Get-Date
 
-# Save note for current selected date
+# Save note for current selected date (silent)
 function Save-CurrentNote {
     $dateStr = $script:selectedDate.ToString("yyyy-MM-dd")
     $noteText = $notesTextBox.Text.Trim()
@@ -73,6 +70,7 @@ $form.Size = New-Object System.Drawing.Size(1280, 820)
 $form.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 46)
 $form.StartPosition = "CenterScreen"
 
+# Silent save on close — no popup
 $form.Add_FormClosing({ Save-CurrentNote })
 
 # Input Panel
@@ -166,10 +164,7 @@ $addBtn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $addBtn.FlatAppearance.BorderSize = 0
 $addBtn.Add_Click({
     try {
-        if ([string]::IsNullOrWhiteSpace($pointsBox.Text)) {
-            [System.Windows.Forms.MessageBox]::Show("Please enter a number", "Invalid Input", "OK", "Warning")
-            return
-        }
+        if ([string]::IsNullOrWhiteSpace($pointsBox.Text)) { return }
         $pointsValue = [decimal]$pointsBox.Text
         $entry = [PSCustomObject]@{
             Date     = $script:selectedDate.ToString("yyyy-MM-dd")
@@ -179,7 +174,7 @@ $addBtn.Add_Click({
         $script:data += $entry
         UpdateCalendar
     } catch {
-        [System.Windows.Forms.MessageBox]::Show("Please enter a valid number", "Invalid Input", "OK", "Warning")
+        # Silent — no popup
     }
 })
 $inputPanel.Controls.Add($addBtn)
@@ -196,10 +191,7 @@ $removeBtn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $removeBtn.FlatAppearance.BorderSize = 0
 $removeBtn.Add_Click({
     try {
-        if ([string]::IsNullOrWhiteSpace($pointsBox.Text)) {
-            [System.Windows.Forms.MessageBox]::Show("Please enter a number", "Invalid Input", "OK", "Warning")
-            return
-        }
+        if ([string]::IsNullOrWhiteSpace($pointsBox.Text)) { return }
         $pointsValue = [decimal]$pointsBox.Text
         $entry = [PSCustomObject]@{
             Date     = $script:selectedDate.ToString("yyyy-MM-dd")
@@ -209,7 +201,7 @@ $removeBtn.Add_Click({
         $script:data += $entry
         UpdateCalendar
     } catch {
-        [System.Windows.Forms.MessageBox]::Show("Please enter a valid number", "Invalid Input", "OK", "Warning")
+        # Silent — no popup
     }
 })
 $inputPanel.Controls.Add($removeBtn)
@@ -309,15 +301,7 @@ $saveNoteBtn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $saveNoteBtn.FlatAppearance.BorderSize = 0
 $saveNoteBtn.Add_Click({
     Save-CurrentNote
-    $statusLabel = New-Object System.Windows.Forms.Label
-    $statusLabel.Text = "Saved!"
-    $statusLabel.ForeColor = [System.Drawing.Color]::Lime
-    $statusLabel.Location = New-Object System.Drawing.Point(120, 250)
-    $statusLabel.AutoSize = $true
-    $notesPanel.Controls.Add($statusLabel)
-    $form.Refresh()
-    Start-Sleep -Milliseconds 1200
-    $notesPanel.Controls.Remove($statusLabel)
+    # No popup — silent save
 })
 $notesPanel.Controls.Add($saveNoteBtn)
 Set-RoundedCorners $saveNoteBtn 10
@@ -423,7 +407,7 @@ function GetColorForPoints($points) {
     else { return [System.Drawing.Color]::FromArgb(0, 255, 0) }
 }
 
-# Calendar cells - Using old working per-cell click handlers
+# Calendar cells
 $script:dayCells = @()
 $xPositions = @(15, 128, 241, 354, 467, 580, 693)
 $yPositions = @(135, 238, 341, 444, 547, 650)
